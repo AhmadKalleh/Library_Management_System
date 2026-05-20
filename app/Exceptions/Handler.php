@@ -2,7 +2,7 @@
 
 namespace App\Exceptions;
 
-use App\Http\Controllers\ResponseHelper\ResponseHelper;
+use App\Traits\ResponseHelper\ResponseHelper;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Auth\Access\AuthorizationException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -61,18 +61,23 @@ class Handler extends ExceptionHandler
 
         // Handle AuthorizationException
         if ($exception instanceof AuthorizationException) {
-            return $this->Error([], __('auth.unauthorized',[],$lang), 403);
+            return $this->Error(
+                [],
+                'You are not authorized to perform this action.',
+                403
+            );
         }
 
         // Handle NotFoundHttpException
         if ($exception instanceof NotFoundHttpException) {
-            return $this->Error([], __('message.resource_not_found',[],$lang), 404);
+            return $this->Error(
+                [],
+                'The requested resource was not found.',
+                404
+            );
         }
 
-        // Handle ValidationException
-        if ($exception instanceof ValidationException) {
-            return $this->Validation($exception->errors(), __('message.validation_error',[],$lang), 422);
-        }
+        
 
         // Default handling for other exceptions
         return $this->Error([], $exception->getMessage(), 500);

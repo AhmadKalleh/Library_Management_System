@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Upload;
+namespace App\Traits\Upload;
 
 
 trait UplodeImageHelper

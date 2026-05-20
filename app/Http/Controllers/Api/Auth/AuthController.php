@@ -1,8 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Api\Auth;
-
-
+use Illuminate\Http\Request;
 use App\Http\Requests\AuthRequests\FormRequestAuth;
 use App\Services\Auth\AuthService;
 use Illuminate\Http\JsonResponse;
@@ -10,7 +9,7 @@ use Illuminate\Http\JsonResponse;
 use App\Traits\ResponseHelper\ResponseHelper;
 use Throwable;
 
-class AuthController
+class AuthController extends Controller   // i add extends controller to use authorize method in register function
 {
     use ResponseHelper;
 
@@ -64,4 +63,35 @@ class AuthController
         }
     }
 
+public function login(FormRequestAuth $request): JsonResponse
+    {
+        try {
+            $data = $this->_authService->login($request->validated());
+            return $this->Success($data['data'], $data['message'], $data['code']);    
+        } catch (Throwable $e) {
+            return $this->Error([], $e->getMessage());
+        }
+    }
+
+public function logout(FormRequestAuth $request): JsonResponse
+{
+        $data = [];
+    try {
+        $data = $this->_authService
+        ->logout($request->user());
+
+        return $this->Success(
+            $data['data'],
+            $data['message'],
+            $data['code']
+        );
+
+    } catch (Throwable $e) {
+
+        return $this->Error(
+            [],
+            $e->getMessage()
+        );
+    }
+}
 }

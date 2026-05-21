@@ -1,8 +1,6 @@
 <?php
 
 namespace App\Services\Auth;
-use Illuminate\Validation\ValidationException;
-use Illuminate\Support\Facades\Hash;
 use App\Jobs\SendVerificationCodeJob;
 use App\Repositories\Interfaces\AuthRepositoryInterface;
 
@@ -108,51 +106,54 @@ class AuthService
         ];
     }
 
-    public function login(array $data) : array
-{
-    $user = $this->_authRepository
-        ->findByEmail($data['email']);
+    public function login(array $data): array
+    {
+        $result = $this->_authRepository->login($data);
 
-    if (!$user) {
-        throw ValidationException::withMessages([
-            'email' => ['Invalid credentials']
-        ]);
+        return match($result['status']) {
+
+            'invalid_credentials' => [
+                'data'    => [],
+                'message' => 'Invalid password.',
+                'code'    => 401,
+            ],
+            'unverified_email' => [
+                'data'    => [],
+                'message' => 'Email not verified. Please verify your email before logging in.',
+                'code'    => 403,
+            ],
+            'success' => [
+                'data'    => [
+                    'name' => $result['user']->name,
+                    'email' => $result['user']->email,
+                    'mobile' => $result['user']->mobile,
+                    'token' => $result['token'],
+                ],
+                'message' => 'Login successful.',
+                'code'    => 200,
+            ],
+        };
     }
 
-    if (!Hash::check($data['password'],$user->password)) {
-        throw ValidationException::withMessages([
-            'email' => ['Invalid credentials']
-        ]);
+    public function logout($user): array
+    {
+        $result = $this->_authRepository->logout($user);
+
+        return match($result['status']) {
+            'not_authenticated' => [
+                'data'    => [],
+                'message' => 'You are not authenticated.',
+                'code'    => 401,
+            ],
+            'success' => [
+                'data'    => [],
+                'message' => 'Logout successful.',
+                'code'    => 200,
+            ],
+
+        };
+
     }
 
-    if (!$user->email_verified_at) {
-        throw ValidationException::withMessages([
-            'email' => ['Email not verified']
-        ]);
-    }
 
-    $token = $user->createToken('api_token')
-        ->plainTextToken;
-
-  return [
-    'data' => [
-        'name' => $user->name,
-        'email' => $user->email,
-        'mobile' => $user->mobile,
-        'token' => $token,
-    ],
-    'message' => 'Login successful',
-    'code' => 200
-];
-}
-public function logout($user): array
-{
-    $user->currentAccessToken()->delete();
-
-    return [
-        'data' => [],
-        'message' => 'Logged out successfully',
-        'code' => 200
-    ];
-}
 }

@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Http\Controllers\Api\Auth;
+
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\AuthRequests\FormRequestAuth;
 use App\Services\Auth\AuthService;
@@ -23,7 +25,7 @@ class AuthController extends Controller   // i add extends controller to use aut
 
         try
         {
-            //$this->authorize('create', Book::class);
+            
             $data = $this->_authService->register($request->validated());
             return $this->Success($data['data'],$data['message'],$data['code']);
         }
@@ -63,35 +65,32 @@ class AuthController extends Controller   // i add extends controller to use aut
         }
     }
 
-public function login(FormRequestAuth $request): JsonResponse
+    public function login(FormRequestAuth $request): JsonResponse
     {
         try {
             $data = $this->_authService->login($request->validated());
-            return $this->Success($data['data'], $data['message'], $data['code']);    
+            return $this->Success($data['data'], $data['message'], $data['code']);
         } catch (Throwable $e) {
             return $this->Error([], $e->getMessage());
         }
     }
 
-public function logout(FormRequestAuth $request): JsonResponse
-{
+    public function logout(FormRequestAuth $request): JsonResponse
+    {
         $data = [];
-    try {
-        $data = $this->_authService
-        ->logout($request->user());
+        try {
+            $data = $this->_authService->logout($request->user());
+            return $this->Success(
+                $data['data'],
+                $data['message'],
+                $data['code']
+            );
+        } catch (Throwable $e) {
 
-        return $this->Success(
-            $data['data'],
-            $data['message'],
-            $data['code']
-        );
-
-    } catch (Throwable $e) {
-
-        return $this->Error(
-            [],
-            $e->getMessage()
-        );
+            return $this->Error(
+                [],
+                $e->getMessage()
+            );
+        }
     }
-}
 }

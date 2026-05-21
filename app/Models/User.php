@@ -20,6 +20,7 @@ class User extends Authenticatable
         'verification_code',
         'verification_code_expires_at',
         'verification_attempts',
+        'email_verified_at',
         'mobile',
     ];
 
@@ -31,6 +32,7 @@ class User extends Authenticatable
 
     protected $casts = [
         'verification_code_expires_at' => 'datetime',
+        'email_verified_at' => 'datetime',
     ];
 
     // Relation with Image (polymorphic)

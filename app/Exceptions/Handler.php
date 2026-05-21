@@ -5,6 +5,7 @@ namespace App\Exceptions;
 use App\Traits\ResponseHelper\ResponseHelper;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Auth\AuthenticationException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 use Illuminate\Http\JsonResponse;
@@ -58,6 +59,13 @@ class Handler extends ExceptionHandler
     {
         $lang = Auth::check() ? Auth::user()->preferred_language : 'en';
 
+        if($exception instanceof AuthenticationException) {
+            return $this->Error(
+                [],
+                'You are not authenticated.',
+                401
+            );
+        }
 
         // Handle AuthorizationException
         if ($exception instanceof AuthorizationException) {
@@ -77,7 +85,7 @@ class Handler extends ExceptionHandler
             );
         }
 
-        
+
 
         // Default handling for other exceptions
         return $this->Error([], $exception->getMessage(), 500);

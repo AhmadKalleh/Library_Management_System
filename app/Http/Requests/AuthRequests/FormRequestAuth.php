@@ -31,7 +31,6 @@ class FormRequestAuth extends FormRequest
                 'verify_code' => $this->verifyCode(),
                 'resend_code' => $this->resendCode(),
                 'login' => $this->login(),
-                'logout' => [],
                 default => []
             },
             default => []
@@ -46,7 +45,6 @@ class FormRequestAuth extends FormRequest
             'email' => 'required|email|unique:users,email',
             'mobile' => 'required|string|phone:US-SY,mobile,AUTO|unique:users,mobile',
             'password' => 'required|string|min:6|confirmed',
-
         ];
     }
 
@@ -110,13 +108,9 @@ class FormRequestAuth extends FormRequest
     public function login(): array
     {
         return [
-            'email' => 'required|email',
+            'email' => 'required|email|exists:users,email',
             'password' => 'required|string|min:6',
-    ];
-    
+        ];
     }
-    public function logout(): array
-    {
-        return [];
-    }
+
 }

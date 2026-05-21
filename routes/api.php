@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\Auth\AuthController;
+use App\Http\Controllers\Api\Book\BookController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -25,4 +26,18 @@ Route::controller(AuthController::class)->group(function ()
         Route::post('/logout', [AuthController::class, 'logout']);
     });
 
+});
+
+Route::middleware('auth:sanctum')->group(function () {
+
+    // Public - User + Admin
+    Route::get('books',          [BookController::class, 'index']);
+    Route::get('books/search',   [BookController::class, 'global_search']);
+
+    // Admin Only
+    Route::middleware('can:is-admin')->group(function () {
+        Route::post('books/create',          [BookController::class, 'create_book']);
+        Route::post('books/update',    [BookController::class, 'update_book']);
+        Route::delete('books/delete', [BookController::class, 'delete_book']);
+    });
 });

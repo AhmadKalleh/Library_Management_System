@@ -4,14 +4,12 @@ namespace App\Repositories;
 
 use App\Models\User;
 use App\Repositories\Interfaces\AuthRepositoryInterface;
-use App\Traits\Upload\UplodeImageHelper;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
 
 class AuthRepository implements AuthRepositoryInterface
 {
-    use UplodeImageHelper;
+
     private function generateUniqueVerificationCode()
     {
         do {
@@ -35,10 +33,6 @@ class AuthRepository implements AuthRepositoryInterface
             'role' => 'user',
             'verification_code_expires_at' => now()->addMinutes(5),
         ]);
-
-        if (!empty($data['image'])) {
-            $user->image()->create(['path' => $this->uplodeImage($data['image'],'users')]);
-        }
 
         return [
             'user'  => $user,
@@ -106,15 +100,57 @@ class AuthRepository implements AuthRepositoryInterface
         return ['user' => $user];
     }
 
-public function findByEmail(string $email): ?User
-{
-    return User::where('email', $email)->first();
-}
+    public function login(array $data): array
+    {
+        $user = User::where('email', $data['email'])->first();
 
-    public function logout(User $user): bool
-{
-    return $user->currentAccessToken()->delete();
-}
+        if (!$user || !Hash::check($data['password'], $user->password)) {
+            return [
+                'status' => 'invalid_credentials',
+            ];
+        }
+
+        // if (!$user->email_verified_at) {
+        //     return [
+        //         'status' => 'unverified_email',
+        //     ];
+        // }
+
+        $token = $user->createToken("api_token")->plainTextToken;
+
+        return [
+            'status' => 'success',
+            'user' => $user,
+            'token' => $token,
+        ];
+    }
+
+    public function logout($user): array
+    {
+
+        if(!is_null($user))
+        {
+            $token = $user->currentAccessToken();
+            /** @var PersonalAccessToken|null $token */
+            $token?->delete();
+
+            return [
+                'status' => 'success',
+            ];
+        }
+        else
+        {
+            return [
+                'status' => 'not_authenticated',
+            ];
+        }
+    }
+
+
+
+
+
+
 
 
 }

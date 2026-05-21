@@ -105,4 +105,16 @@ class AuthRepository implements AuthRepositoryInterface
 
         return ['user' => $user];
     }
+
+public function findByEmail(string $email): ?User
+{
+    return User::where('email', $email)->first();
+}
+
+    public function logout(User $user): bool
+{
+    return $user->currentAccessToken()->delete();
+}
+
+
 }

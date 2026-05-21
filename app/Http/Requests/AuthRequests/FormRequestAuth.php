@@ -106,4 +106,17 @@ class FormRequestAuth extends FormRequest
             )
         );
     }
+
+    public function login(): array
+    {
+        return [
+            'email' => 'required|email',
+            'password' => 'required|string|min:6',
+    ];
+    
+    }
+    public function logout(): array
+    {
+        return [];
+    }
 }

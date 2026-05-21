@@ -1,7 +1,8 @@
 <?php
 
 namespace App\Services\Auth;
-
+use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Hash;
 use App\Jobs\SendVerificationCodeJob;
 use App\Repositories\Interfaces\AuthRepositoryInterface;
 
@@ -106,4 +107,52 @@ class AuthService
             'code'    => 200,
         ];
     }
+
+    public function login(array $data) : array
+{
+    $user = $this->_authRepository
+        ->findByEmail($data['email']);
+
+    if (!$user) {
+        throw ValidationException::withMessages([
+            'email' => ['Invalid credentials']
+        ]);
+    }
+
+    if (!Hash::check($data['password'],$user->password)) {
+        throw ValidationException::withMessages([
+            'email' => ['Invalid credentials']
+        ]);
+    }
+
+    if (!$user->email_verified_at) {
+        throw ValidationException::withMessages([
+            'email' => ['Email not verified']
+        ]);
+    }
+
+    $token = $user->createToken('api_token')
+        ->plainTextToken;
+
+  return [
+    'data' => [
+        'name' => $user->name,
+        'email' => $user->email,
+        'mobile' => $user->mobile,
+        'token' => $token,
+    ],
+    'message' => 'Login successful',
+    'code' => 200
+];
+}
+public function logout($user): array
+{
+    $user->currentAccessToken()->delete();
+
+    return [
+        'data' => [],
+        'message' => 'Logged out successfully',
+        'code' => 200
+    ];
+}
 }

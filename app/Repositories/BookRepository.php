@@ -27,11 +27,33 @@ class BookRepository implements BookRepositoryInterface
             ],
         ];
     }
-    public function index(): array
+
+    public function show_book($book_id): array
     {
-        $books = Book::with(['category', 'image'])
-            ->latest()
-            ->paginate(10);
+        $book = Book::with(['category', 'image'])->findOrFail($book_id);
+
+        return ['book' => $book];
+    }
+
+    public function index($category_name): array
+    {
+
+        switch (strtolower($category_name)) {
+            case 'all':
+                $books = Book::with(['category', 'image'])
+                    ->latest()
+                    ->paginate(10);
+                break;
+
+            default:
+                $books = Book::with(['category', 'image'])
+                    ->whereHas('category', function ($query) use ($category_name) {
+                        $query->where('name', $category_name);
+                    })
+                    ->latest()
+                    ->paginate(10);
+                break;
+        }
 
         return $this->booksData($books);
     }

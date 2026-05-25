@@ -7,39 +7,17 @@ use App\Repositories\Interfaces\CategoryRepositoryInterface;
 
 class CategoryRepository implements CategoryRepositoryInterface
 {
-    private function categoriesData($categories)
-    {
-        return [
-            'categories' => $categories->items(),
 
-            'pagination' => [
-                'current_page'  => $categories->currentPage(),
-                'last_page'     => $categories->lastPage(),
-                'per_page'      => $categories->perPage(),
-                'total'         => $categories->total(),
-                'has_more'      => $categories->hasMorePages(),
-                'next_page_url' => $categories->nextPageUrl(),
-                'prev_page_url' => $categories->previousPageUrl(),
-            ],
-        ];
-    }
 
-    public function index(): array
+    public function index()
     {
-        $categories = Category::withCount('books')
+        return  Category::withCount('books')
             ->latest()
-            ->paginate(10);
+            ->get();
 
-        return $this->categoriesData($categories);
     }
 
-    public function search_category($value): array
-    {
-        $categories = Category::where('name', 'LIKE', "%{$value}%")
-            ->paginate(10);
 
-        return $this->categoriesData($categories);
-    }
 
     public function create_category(array $data): array
     {
@@ -72,7 +50,7 @@ class CategoryRepository implements CategoryRepositoryInterface
         $category = Category::withCount('books')
             ->findOrFail($category_id);
 
-            // to not allow deleting a category if it has books, you can change this logic as you want 
+        // to not allow deleting a category if it has books, you can change this logic as you want
         if ($category->books_count > 0) {
 
             return [

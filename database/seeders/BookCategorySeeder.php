@@ -13,14 +13,14 @@ class BookCategorySeeder extends Seeder
     {
         // إنشاء Categories
         $categories = [
-            ['name' => 'Programming'],
-            ['name' => 'Science'],
-            ['name' => 'Literature'],
-            ['name' => 'History'],
+            ['name' => 'Programming','description' => 'Books about programming and software development.'],
+            ['name' => 'Science','description' => 'Books about science and research.'],
+            ['name' => 'Literature','description' => 'Books about literature and writing.'],
+            ['name' => 'History','description' => 'Books about historical events and figures.'],
         ];
 
         foreach ($categories as $cat) {
-            Category::firstOrCreate(['name' => $cat['name']]);
+            Category::firstOrCreate(['name' => $cat['name'],'description' => $cat['description']]);
         }
 
         $books = [

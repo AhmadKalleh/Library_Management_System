@@ -110,11 +110,11 @@ class AuthRepository implements AuthRepositoryInterface
             ];
         }
 
-        // if (!$user->email_verified_at) {
-        //     return [
-        //         'status' => 'unverified_email',
-        //     ];
-        // }
+        if (!$user->email_verified_at) {
+            return [
+                'status' => 'unverified_email',
+            ];
+        }
 
         $token = $user->createToken("api_token")->plainTextToken;
 

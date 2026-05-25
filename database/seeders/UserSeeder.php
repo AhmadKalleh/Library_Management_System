@@ -21,6 +21,7 @@ class UserSeeder extends Seeder
             'role' => 'admin',
             'status' => 'active',
             'password' => Hash::make('password'),
+            'email_verified_at' => now(),
         ]);
 
         User::query()->create([
@@ -30,6 +31,7 @@ class UserSeeder extends Seeder
             'role' => 'user',
             'status' => 'active',
             'password' => Hash::make('password'),
+            'email_verified_at' => now(),
         ]);
     }
 }

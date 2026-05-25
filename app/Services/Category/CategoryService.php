@@ -21,17 +21,7 @@ class CategoryService
         ];
     }
 
-    public function search_categories(array $data): array
-    {
-        $result = $this->_categoryRepository->search_category($data['value']);
-
-        return [
-            'data'    => $result,
-            'message' => 'Search results retrieved successfully',
-            'code'    => 200,
-        ];
-    }
-
+    
     public function create_category(array $data): array
     {
         $result = $this->_categoryRepository->create_category($data);

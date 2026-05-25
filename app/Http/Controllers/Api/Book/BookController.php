@@ -19,13 +19,13 @@ class BookController extends Controller
         protected BookService $_bookService
     ) {}
 
-    public function index(): JsonResponse
+    public function index(FormRequestBook $request): JsonResponse
     {
         $data = [];
 
         try {
             $this->authorize('viewAny', Book::class);
-            $raw  = $this->_bookService->get_all_books();
+            $raw  = $this->_bookService->get_all_books($request->validated());
             $data = [
                 'books'      =>BookResource::collection($raw['data']['books']),
                 'pagination' => $raw['data']['pagination'],
@@ -49,6 +49,22 @@ class BookController extends Controller
                 'books'      => BookResource::collection($raw['data']['books']),
                 'pagination' => $raw['data']['pagination'],
             ];
+
+            return $this->Success($data, $raw['message'], $raw['code']);
+
+        } catch (Throwable $e) {
+            return $this->Error($data, $e->getMessage());
+        }
+    }
+
+    public function show_book(FormRequestBook $request): JsonResponse
+    {
+        $data = [];
+
+        try {
+            $this->authorize('view', Book::class);
+            $raw  = $this->_bookService->show_book($request->validated()['book_id']);
+            $data = ['book' => new BookResource($raw['data']['book'])];
 
             return $this->Success($data, $raw['message'], $raw['code']);
 

@@ -30,6 +30,8 @@ class FormRequestBook extends FormRequest
         {
             'GET' => match ($this->route()->getActionMethod())
             {
+                'index' => $this->index(),
+                'show_book' => $this->showBook(),
                 'global_search' => $this->globalSearch(),
             },
             'POST' => match ($this->route()->getActionMethod())
@@ -43,6 +45,20 @@ class FormRequestBook extends FormRequest
             },
             default => []
         };
+    }
+
+    public function index():array
+    {
+        return [
+            'category_name' => 'required|string|max:255',
+        ];
+    }
+
+    public function showBook(): array
+    {
+        return [
+            'book_id' => 'required|integer|exists:books,id',
+        ];
     }
 
     public function createBook(): array

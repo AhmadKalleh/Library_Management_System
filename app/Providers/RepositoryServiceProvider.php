@@ -7,7 +7,8 @@ use App\Repositories\Interfaces\AuthRepositoryInterface;
 use App\Repositories\AuthRepository;
 use App\Repositories\BookRepository;
 use App\Repositories\Interfaces\BookRepositoryInterface;
-
+use App\Repositories\CategoryRepository;
+use App\Repositories\Interfaces\CategoryRepositoryInterface;
 class RepositoryServiceProvider extends ServiceProvider
 {
     /**
@@ -17,6 +18,7 @@ class RepositoryServiceProvider extends ServiceProvider
     {
         $this->app->bind(AuthRepositoryInterface::class, AuthRepository::class);
         $this->app->bind(BookRepositoryInterface::class, BookRepository::class);
+        $this->app->bind(CategoryRepositoryInterface::class, CategoryRepository::class);
     }
 
     /**

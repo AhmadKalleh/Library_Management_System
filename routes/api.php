@@ -35,19 +35,24 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('books',          [BookController::class, 'index']);
     Route::get('books/search',   [BookController::class, 'global_search']);
 
-        //Categorys  public for user and admin but create update delete for admin only
-          Route::get('categories',     [CategoryController::class, 'index']);
-          Route::get('categories/search', [CategoryController::class, 'search_category']);
+    //Categorys  public for user and admin but create update delete for admin only
+    Route::get('categories',     [CategoryController::class, 'index']);
     // Admin Only
-    Route::middleware('can:is-admin')->group(function () {
+    Route::middleware('can:is-admin')->group(function ()
+    {
+
+        // Books
+        Route::get('books/show', [BookController::class, 'show_book']);
         Route::post('books/create',          [BookController::class, 'create_book']);
         Route::post('books/update',    [BookController::class, 'update_book']);
         Route::delete('books/delete', [BookController::class, 'delete_book']);
-        });
-        
-            Route::middleware('can:is-admin')->group(function () {
-                Route::post('categories/create',  [CategoryController::class, 'create_category']);
-                Route::post('categories/update',  [CategoryController::class, 'update_category']);
-                Route::delete('categories/delete',[CategoryController::class, 'delete_category']);
-            });
+
+
+        // Category
+        Route::post('categories/create',  [CategoryController::class, 'create_category']);
+        Route::post('categories/update',  [CategoryController::class, 'update_category']);
+        Route::delete('categories/delete',[CategoryController::class, 'delete_category']);
+    });
+
+
 });

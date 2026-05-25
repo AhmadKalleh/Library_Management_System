@@ -21,10 +21,6 @@ class FormRequestCategory extends FormRequest
     {
         return match ($this->method())
         {
-            'GET' => match ($this->route()->getActionMethod())
-            {
-                'search_category' => $this->searchCategory(),
-            },
 
             'POST' => match ($this->route()->getActionMethod())
             {
@@ -77,13 +73,7 @@ class FormRequestCategory extends FormRequest
         ];
     }
 
-    /* ================= SEARCH ================= */
-    public function searchCategory(): array
-    {
-        return [
-            'value' => 'required|string|max:255',
-        ];
-    }
+    
 
     /* ================= CUSTOM MESSAGES ================= */
     public function messages(): array

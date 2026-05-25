@@ -29,7 +29,7 @@ class CategoryController extends Controller
             $raw = $this->_categoryService->get_all_categories();
 
             $data = [
-                'categories' => CategoryResource::collection($raw['data']['categories']),
+                'categories' => CategoryResource::collection($raw['data']),
             ];
 
             return $this->Success($data, $raw['message'], $raw['code']);
@@ -39,25 +39,6 @@ class CategoryController extends Controller
         }
     }
 
-    public function search_category(FormRequestCategory $request): JsonResponse
-    {
-        $data = [];
-
-        try {
-            $this->authorize('view', Category::class);
-
-            $raw = $this->_categoryService->search_categories($request->validated());
-
-            $data = [
-                'categories' => CategoryResource::collection($raw['data']['categories']),
-            ];
-
-            return $this->Success($data, $raw['message'], $raw['code']);
-
-        } catch (Throwable $e) {
-            return $this->Error($data, $e->getMessage());
-        }
-    }
 
     public function create_category(FormRequestCategory $request): JsonResponse
     {
@@ -74,10 +55,8 @@ class CategoryController extends Controller
 
             return $this->Success($data, $raw['message'], $raw['code']);
 
-        } catch (\Illuminate\Auth\Access\AuthorizationException) {
-            return $this->Error($data, 'Unauthorized', 403);
-
-        } catch (Throwable $e) {
+        }
+        catch (Throwable $e) {
             return $this->Error($data, $e->getMessage());
         }
     }
@@ -97,10 +76,7 @@ class CategoryController extends Controller
 
             return $this->Success($data, $raw['message'], $raw['code']);
 
-        } catch (\Illuminate\Auth\Access\AuthorizationException) {
-            return $this->Error($data, 'Unauthorized', 403);
-
-        } catch (Throwable $e) {
+        }catch (Throwable $e) {
             return $this->Error($data, $e->getMessage());
         }
     }
@@ -116,10 +92,7 @@ class CategoryController extends Controller
 
             return $this->Success($data, $raw['message'], $raw['code']);
 
-        } catch (\Illuminate\Auth\Access\AuthorizationException) {
-            return $this->Error($data, 'Unauthorized', 403);
-
-        } catch (Throwable $e) {
+        }catch (Throwable $e) {
             return $this->Error($data, $e->getMessage());
         }
     }

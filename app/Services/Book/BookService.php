@@ -9,13 +9,24 @@ class BookService
         protected BookRepositoryInterface $_bookRepository
     ) {}
 
-    public function get_all_books(): array
+    public function get_all_books(array $data): array
     {
-        $result = $this->_bookRepository->index();
+        $result = $this->_bookRepository->index($data['category_name']);
 
         return [
             'data'    => $result,
             'message' => 'Books retrieved successfully',
+            'code'    => 200,
+        ];
+    }
+
+    public function show_book(int $book_id): array
+    {
+        $result = $this->_bookRepository->show_book($book_id);
+
+        return [
+            'data'    => $result,
+            'message' => 'Book details retrieved successfully',
             'code'    => 200,
         ];
     }

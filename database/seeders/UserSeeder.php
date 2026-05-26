@@ -33,5 +33,36 @@ class UserSeeder extends Seeder
             'password' => Hash::make('password'),
             'email_verified_at' => now(),
         ]);
+
+        User::query()->create([
+            'name' => 'Regular User',
+            'email' => 'moh@gmail.com',
+            'mobile' => '+963982786604',
+            'role' => 'user',
+            'status' => 'active',
+            'password' => Hash::make('password'),
+            'email_verified_at' => now(),
+        ]);
+
+
+        User::query()->create([
+            'name' => 'Regular User',
+            'email' => 'san@gmail.com',
+            'mobile' => '+963982786339',
+            'role' => 'user',
+            'status' => 'active',
+            'password' => Hash::make('password'),
+            'email_verified_at' => now(),
+        ]);
+
+        User::query()->create([
+            'name' => 'Regular User',
+            'email' => 'hass@gmail.com',
+            'mobile' => '+963982786989',
+            'role' => 'user',
+            'status' => 'active',
+            'password' => Hash::make('password'),
+            'email_verified_at' => now(),
+        ]);
     }
 }

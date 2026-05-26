@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\Book\BookController;
+use App\Http\Controllers\Api\Borrow\BorrowController;
 use App\Http\Controllers\Api\Category\CategoryController;
 use Illuminate\Support\Facades\Route;
 
@@ -35,8 +36,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('books',          [BookController::class, 'index']);
     Route::get('books/search',   [BookController::class, 'global_search']);
 
+    // Borrows - User can see only their borrows but admin can see all borrows
+    Route::get('borrows',        [BorrowController::class, 'index']);
+
+    // User can create borrow request but admin cannot create borrow request
+    Route::post('borrows', [BorrowController::class, 'borrow_request']);
     //Categorys  public for user and admin but create update delete for admin only
     Route::get('categories',     [CategoryController::class, 'index']);
+
+
     // Admin Only
     Route::middleware('can:is-admin')->group(function ()
     {
@@ -52,6 +60,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('categories/create',  [CategoryController::class, 'create_category']);
         Route::post('categories/update',  [CategoryController::class, 'update_category']);
         Route::delete('categories/delete',[CategoryController::class, 'delete_category']);
+
+        // Borrows
+        Route::post('borrows/confirm', [BorrowController::class, 'confirm_receive']);
+        Route::post('borrows/return',  [BorrowController::class, 'return_book']);
     });
 
 

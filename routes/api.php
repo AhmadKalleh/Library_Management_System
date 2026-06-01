@@ -35,6 +35,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Public - User + Admin
     Route::get('books',          [BookController::class, 'index']);
     Route::get('books/search',   [BookController::class, 'global_search']);
+    Route::get('books/filter',   [BookController::class, 'filter']);
 
     // Borrows - User can see only their borrows but admin can see all borrows
     Route::get('borrows',        [BorrowController::class, 'index']);

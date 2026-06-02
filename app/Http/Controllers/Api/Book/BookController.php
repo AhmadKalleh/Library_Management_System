@@ -73,6 +73,25 @@ class BookController extends Controller
         }
     }
 
+    public function filter(FormRequestBook $request): JsonResponse
+    {
+        $data = [];
+
+        try {
+            $this->authorize('view', Book::class);
+            $raw  = $this->_bookService->filter_books($request->validated());
+            $data = [
+                'books'      => BookResource::collection($raw['data']['books']),
+                'pagination' => $raw['data']['pagination'],
+            ];
+
+            return $this->Success($data, $raw['message'], $raw['code']);
+
+        } catch (Throwable $e) {
+            return $this->Error($data, $e->getMessage());
+        }
+    }
+
     public function create_book(FormRequestBook $request): JsonResponse
     {
         $data = [];

@@ -31,6 +31,17 @@ class BookService
         ];
     }
 
+    public function filter_books(array $data): array
+    {
+        $result = $this->_bookRepository->filter($data['category_id'], $data['status']);
+
+        return [
+            'data'    => $result,
+            'message' => 'Books filtered successfully',
+            'code'    => 200,
+        ];
+    }
+
     public function search_books(array $data): array
     {
         $result = $this->_bookRepository->global_search($data['value']);

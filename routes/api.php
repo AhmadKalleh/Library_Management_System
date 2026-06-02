@@ -39,8 +39,18 @@ Route::middleware('auth:sanctum')->group(function () {
     // Borrows - User can see only their borrows but admin can see all borrows
     Route::get('borrows',        [BorrowController::class, 'index']);
 
+    // User can see their own profile but admin can see all users   
+    Route::get('users/profile', [UserController::class, 'show_profile']);
+
     // User can create borrow request but admin cannot create borrow request
     Route::post('borrows', [BorrowController::class, 'borrow_request']);
+
+    // user management - user can update their own profile but admin can update all users
+    Route::put('users/profile', [UserController::class, 'update_profile']);
+
+    //user management - user can delete their own profile but admin can delete all users
+    Route::delete('users/profile', [UserController::class, 'delete_profile']);
+    
     //Categorys  public for user and admin but create update delete for admin only
     Route::get('categories',     [CategoryController::class, 'index']);
 

@@ -64,7 +64,14 @@ Route::middleware('auth:sanctum')->group(function () {
         // Borrows
         Route::post('borrows/confirm', [BorrowController::class, 'confirm_receive']);
         Route::post('borrows/return',  [BorrowController::class, 'return_book']);
-    });
-
-
+    
+        // user management
+        Route::get('users', [UserController::class, 'index']);
+        Route::get('users/{user_id}', [UserController::class, 'show_user']);
+        Route::post('users', [UserController::class, 'create_user']);
+        Route::put('users/{user_id}', [UserController::class, 'update_user']);
+        Route::delete('users/{user_id}', [UserController::class, 'delete_user']);
+        Route::get('stats', [UserController::class, 'dashboard_stats']);
+        
+    }); 
 });

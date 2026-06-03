@@ -11,6 +11,8 @@ use App\Repositories\CategoryRepository;
 use App\Repositories\Interfaces\CategoryRepositoryInterface;
 use App\Repositories\BorrowRepository;
 use App\Repositories\Interfaces\BorrowRepositoryInterface;
+use App\Repositories\UserRepository;
+use App\Repositories\Interfaces\UserRepositoryInterface;
 
 class RepositoryServiceProvider extends ServiceProvider
 {
@@ -24,7 +26,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(CategoryRepositoryInterface::class, CategoryRepository::class);
         $this->app->bind(BorrowRepositoryInterface::class, BorrowRepository::class);
         $this->app->bind(UserRepositoryInterface::class, UserRepository::class);
-                
+
     }
 
     /**

@@ -3,6 +3,10 @@
 namespace App\Http\Controllers\Api\User;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\User\StoreUserRequest;
+use App\Http\Requests\User\UpdateUserRequest;
+use App\Http\Requests\User\UserActionRequest;
+use App\Http\Requests\User\UserIndexRequest;
 use App\Http\Requests\UserRequests\FormRequestUser;
 use App\Http\Resources\UserResource;
 use App\Models\User;
@@ -10,7 +14,6 @@ use App\Services\User\UserService;
 use App\Traits\ResponseHelper\ResponseHelper;
 use Illuminate\Http\JsonResponse;
 use Throwable;
-use Illuminate\Auth\Access\AuthorizationException;
 
 class UserController extends Controller
 {
@@ -45,17 +48,16 @@ class UserController extends Controller
         $data = [];
 
         try {
-            $raw    = $this->_userService->show_user($request->validated()['user_id']);
-            $target = $raw['data']['user'];
 
-            $this->authorize('view', $target);
+            $this->authorize('view', User::class);
 
-            $data = ['user' => new UserResource($target)];
+            $raw  = $this->_userService->get_user($request->user_id);
+            $data = [
+                'user'        => new UserResource($raw['data']['user']),
+                'has_overdue' => $raw['data']['has_overdue'],
+            ];
 
             return $this->Success($data, $raw['message'], $raw['code']);
-
-        } catch (\Illuminate\Auth\Access\AuthorizationException) {
-            return $this->Error($data, 'Unauthorized', 403);
 
         } catch (Throwable $e) {
             return $this->Error($data, $e->getMessage());
@@ -74,31 +76,23 @@ class UserController extends Controller
 
             return $this->Success($data, $raw['message'], $raw['code']);
 
-        } catch (\Illuminate\Auth\Access\AuthorizationException) {
-            return $this->Error($data, 'Unauthorized', 403);
-
         } catch (Throwable $e) {
             return $this->Error($data, $e->getMessage());
         }
     }
 
-    public function update_user(FormRequestUser $request): JsonResponse
+    public function update_user(FormRequestUser $request,int $user): JsonResponse
     {
         $data = [];
 
         try {
-            $raw    = $this->_userService->show_user($request->validated()['user_id']);
-            $target = $raw['data']['user'];
-
+            $target = User::findOrFail($user);
             $this->authorize('update', $target);
 
-            $raw  = $this->_userService->update_user($request->validated());
+            $raw  = $this->_userService->update_user($user, $request->validated());
             $data = ['user' => new UserResource($raw['data']['user'])];
 
             return $this->Success($data, $raw['message'], $raw['code']);
-
-        } catch (\Illuminate\Auth\Access\AuthorizationException) {
-            return $this->Error($data, 'Unauthorized', 403);
 
         } catch (Throwable $e) {
             return $this->Error($data, $e->getMessage());
@@ -110,39 +104,92 @@ class UserController extends Controller
         $data = [];
 
         try {
-            $raw    = $this->_userService->show_user($request->validated()['user_id']);
-            $target = $raw['data']['user'];
-
+            $target = User::findOrFail($request['user_id']);
             $this->authorize('delete', $target);
 
-            $raw = $this->_userService->delete_user($request->validated()['user_id'], auth()->user());
+            $raw = $this->_userService->delete_user($request['user_id']);
+
+            if ($raw['code'] !== 200) {
+                return $this->Error($data, $raw['message'], $raw['code']);
+            }
 
             return $this->Success($data, $raw['message'], $raw['code']);
-
-        } catch (\Illuminate\Auth\Access\AuthorizationException) {
-            return $this->Error($data, 'Unauthorized', 403);
 
         } catch (Throwable $e) {
             return $this->Error($data, $e->getMessage());
         }
     }
 
-    public function dashboard_stats(): JsonResponse
+    public function dashboard_statistics(): JsonResponse
     {
         $data = [];
 
         try {
             $this->authorize('viewAny', User::class);
 
-            $raw  = $this->_userService->dashboard_stats();
-            $data = ['stats' => $raw['data']['stats']];
+            $raw  = $this->_userService->get_dashboard_stats();
+            $data = $raw['data'];
 
             return $this->Success($data, $raw['message'], $raw['code']);
 
-        } catch (\Illuminate\Auth\Access\AuthorizationException) {
-            return $this->Error($data, 'Unauthorized', 403);
+        } catch (Throwable $e) {
+            return $this->Error($data, $e->getMessage());
+        }
+    }
+
+    public function profile(): JsonResponse
+    {
+        $data = [];
+
+        try {
+            $raw  = $this->_userService->get_profile();
+            $data = [
+                'user'           => new UserResource($raw['data']['user']),
+            ];
+
+            return $this->Success($data, $raw['message'], $raw['code']);
 
         } catch (Throwable $e) {
+            return $this->Error($data, $e->getMessage());
+        }
+    }
+
+    public function activate(FormRequestUser $request): JsonResponse
+    {
+        $data = [];
+
+        try {
+            $this->authorize('manage', User::class);
+
+            $raw = $this->_userService->activate_user($request['user_id']);
+
+            if ($raw['code'] !== 200) {
+                return $this->Error($data, $raw['message'], $raw['code']);
+            }
+
+            return $this->Success($data, $raw['message'], $raw['code']);
+
+        } catch (Throwable $e) {
+            return $this->Error($data, $e->getMessage());
+        }
+    }
+
+    public function ban(FormRequestUser $request): JsonResponse
+    {
+        $data = [];
+
+        try {
+            $this->authorize('manage', User::class);
+
+            $raw = $this->_userService->ban_user($request['user_id']);
+
+            if ($raw['code'] !== 200) {
+                return $this->Error($data, $raw['message'], $raw['code']);
+            }
+
+            return $this->Success($data, $raw['message'], $raw['code']);
+
+        }  catch (Throwable $e) {
             return $this->Error($data, $e->getMessage());
         }
     }

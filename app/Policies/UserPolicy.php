@@ -6,33 +6,45 @@ use App\Models\User;
 
 class UserPolicy
 {
-   
-    public function viewAny(User $auth): bool
+    // Admin يشوف كل المستخدمين
+    public function viewAny(User $user): bool
     {
-        return $auth->role === 'admin';
+        return $user->role === 'admin';
     }
 
-   
-    public function view(User $auth, User $target): bool
+    // Admin يشوف مستخدم واحد
+    public function view(User $user): bool
     {
-        return $auth->role === 'admin' || $auth->id === $target->id;
+        return $user->role === 'admin';
     }
 
-
-    public function create(User $auth): bool
+    // Admin ينشئ مستخدم
+    public function create(User $user): bool
     {
-        return $auth->role === 'admin';
+        return $user->role === 'admin';
     }
 
-
-    public function update(User $auth, User $target): bool
+    // Admin يعدل أي مستخدم / User يعدل نفسه فقط
+    public function update(User $user, User $target): bool
     {
-        return $auth->role === 'admin' || $auth->id === $target->id;
+        return $user->role === 'admin' || $user->id === $target->id;
     }
 
-
-    public function delete(User $auth, User $target): bool
+    // Admin فقط يحذف
+    public function delete(User $user, User $target): bool
     {
-        return $auth->role === 'admin' && $auth->id !== $target->id;
+        return $user->role === 'admin' && $user->id !== $target->id;
+    }
+
+    // Admin فقط يحظر/يفعّل
+    public function manage(User $user): bool
+    {
+        return $user->role === 'admin';
+    }
+
+    // كل مستخدم يشوف بروفايله
+    public function view_profile(User $user): bool
+    {
+        return true;
     }
 }

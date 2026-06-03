@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\Book\BookController;
 use App\Http\Controllers\Api\Borrow\BorrowController;
 use App\Http\Controllers\Api\Category\CategoryController;
+use App\Http\Controllers\Api\User\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -45,7 +46,9 @@ Route::middleware('auth:sanctum')->group(function () {
     //Categorys  public for user and admin but create update delete for admin only
     Route::get('categories',     [CategoryController::class, 'index']);
 
-
+    // User Profile
+    Route::get('profile', [UserController::class, 'profile']);
+    Route::post('profile/{user}', [UserController::class, 'update_user']);
     // Admin Only
     Route::middleware('can:is-admin')->group(function ()
     {
@@ -65,14 +68,15 @@ Route::middleware('auth:sanctum')->group(function () {
         // Borrows
         Route::post('borrows/confirm', [BorrowController::class, 'confirm_receive']);
         Route::post('borrows/return',  [BorrowController::class, 'return_book']);
-    
+
         // user management
         Route::get('users', [UserController::class, 'index']);
-        Route::get('users/{user_id}', [UserController::class, 'show_user']);
+        Route::get('users/show-user', [UserController::class, 'show_user']);
         Route::post('users', [UserController::class, 'create_user']);
-        Route::put('users/{user_id}', [UserController::class, 'update_user']);
-        Route::delete('users/{user_id}', [UserController::class, 'delete_user']);
-        Route::get('stats', [UserController::class, 'dashboard_stats']);
-        
-    }); 
+        Route::delete('users/delete-user', [UserController::class, 'delete_user']);
+        Route::get('statistics', [UserController::class, 'dashboard_statistics']);
+        Route::post('users/activate',     [UserController::class, 'activate']);
+        Route::post('users/ban',          [UserController::class, 'ban']);
+
+    });
 });

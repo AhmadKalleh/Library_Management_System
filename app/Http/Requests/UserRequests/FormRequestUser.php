@@ -30,6 +30,8 @@ class FormRequestUser extends FormRequest
             {
                 'create_user' => $this->createUser(),
                 'update_user' => $this->updateUser(),
+                'activate'    => $this->showUser(),
+                'ban'         => $this->showUser(),
             },
             'DELETE' => match ($this->route()->getActionMethod())
             {
@@ -42,9 +44,8 @@ class FormRequestUser extends FormRequest
     public function index(): array
     {
         return [
-            'role'   => 'sometimes|string|in:admin,user',
-            'status' => 'sometimes|string|in:active,inactive',
-            'search' => 'sometimes|string|max:255',
+            'status' => 'sometimes|string|in:active,banned,all',
+            'search' => 'sometimes|nullable|string',
         ];
     }
 
@@ -60,9 +61,10 @@ class FormRequestUser extends FormRequest
         return [
             'name'                  => 'required|string|max:255',
             'email'                 => 'required|email|unique:users,email',
+            'mobile'                => 'required|string|unique:users,mobile',
             'password'              => 'required|string|min:8|confirmed',
             'role'                  => 'required|string|in:admin,user',
-            'status'                => 'sometimes|string|in:active,inactive',
+            'image'                 => 'required|file|mimes:jpeg,png,jpg,gif,svg,ico',
         ];
     }
 
@@ -71,16 +73,20 @@ class FormRequestUser extends FormRequest
         $userId = $this->input('user_id');
 
         return [
-            'user_id'               => 'required|integer|exists:users,id',
             'name'                  => 'sometimes|string|max:255',
             'email'                 => [
                 'sometimes',
                 'email',
                 Rule::unique('users', 'email')->ignore($userId),
             ],
+            'mobile'                => [
+                'sometimes',
+                'string',
+                Rule::unique('users', 'mobile')->ignore($userId),
+            ],
             'password'              => 'sometimes|string|min:8|confirmed',
             'role'                  => 'sometimes|string|in:admin,user',
-            'status'                => 'sometimes|string|in:active,inactive',
+            'image'                 => 'sometimes|file|mimes:jpeg,png,jpg,gif,svg,ico',
         ];
     }
 
@@ -96,11 +102,39 @@ class FormRequestUser extends FormRequest
         return [
             'user_id.exists'   => 'The selected user does not exist.',
             'role.in'          => 'Role must be either admin or user.',
-            'status.in'        => 'Status must be either active or inactive.',
+            'status.in'        => 'Status must be either active or banned.',
             'email.unique'     => 'This email is already taken.',
             'password.min'     => 'Password must be at least 8 characters.',
             'password.confirmed' => 'Password confirmation does not match.',
         ];
+    }
+
+    protected function prepareForValidation()
+    {
+
+        if ($this->method() === 'POST'
+        && $this->route()->getActionMethod() === 'create_user')
+        {
+                $this->merge([
+                'name' => trim($this->name),
+                'password' => trim($this->password),
+                'mobile' => $this->normalizePhone($this->mobile),
+            ]);
+        }
+    }
+
+    private function normalizePhone(string $mobile): string
+    {
+
+        $cleanPhone = preg_replace('/[^0-9]/', '', $mobile);
+
+        if (str_starts_with($cleanPhone, '0')) {
+            $cleanPhone = substr($cleanPhone, 1);
+        }
+
+        $fullPhone = '+963' . $cleanPhone;
+
+        return $fullPhone;
     }
 
     protected function failedValidation(Validator $validator)

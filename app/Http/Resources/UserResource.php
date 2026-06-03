@@ -22,6 +22,20 @@ class UserResource extends JsonResource
             'image' => url(Storage::url(
                 $this->image->path ?? 'users/profile-user.png'
             )),
+            'borrowed_books_count' => $this->whenLoaded('borrows', fn() =>
+                $this->borrows->whereIn('status', ['borrowed', 'overdue'])->count()
+            ),
+            'overdue_status' => $this->whenLoaded('borrows', fn() =>
+                $this->borrows->where('status', 'overdue')->isNotEmpty()
+                    ? 'overdue'
+                    : 'on_time'
+            ),
+            'actions' => [
+                'can_ban'      => $this->status === 'active',   // زر حظر
+                'can_activate' => $this->status === 'banned',   // زر تفعيل
+                'can_delete'   => true,                          // زر حذف
+                'can_view'     => true,                          // زر عرض التفاصيل
+            ],
             'created_at' => Carbon::parse($this->created_at)->format('F j, Y'),
         ];
     }

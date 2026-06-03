@@ -17,7 +17,7 @@ class UserRepository implements UserRepositoryInterface
 
     private function base_query(array $filters = [])
     {
-        $query = User::with('image')
+        $query = User::with(['image', 'borrows'])
             ->where('role', 'user');
 
         if($filters['status'] != 'all') {
@@ -59,7 +59,7 @@ class UserRepository implements UserRepositoryInterface
 
     public function show_user(int $user_id): array
     {
-        $user = User::with(['image'])
+        $user = User::with(['image', 'borrows.book'])
             ->findOrFail($user_id);
 
         $has_overdue = $user->borrows()

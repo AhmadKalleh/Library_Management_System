@@ -3,11 +3,8 @@
 namespace App\Http\Controllers\Api\User;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\User\StoreUserRequest;
-use App\Http\Requests\User\UpdateUserRequest;
-use App\Http\Requests\User\UserActionRequest;
-use App\Http\Requests\User\UserIndexRequest;
 use App\Http\Requests\UserRequests\FormRequestUser;
+use App\Http\Resources\UserDetailResource;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Services\User\UserService;
@@ -53,7 +50,7 @@ class UserController extends Controller
 
             $raw  = $this->_userService->get_user($request->user_id);
             $data = [
-                'user'        => new UserResource($raw['data']['user']),
+                'user'        => new UserDetailResource($raw['data']['user']), // ✅
                 'has_overdue' => $raw['data']['has_overdue'],
             ];
 

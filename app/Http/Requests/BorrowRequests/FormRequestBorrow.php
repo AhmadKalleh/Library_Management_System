@@ -46,7 +46,8 @@ class FormRequestBorrow extends FormRequest
     public function index(): array
     {
         return [
-            'status' => 'required|string|in:pending,borrowed,cancelled,returned,overdue,all',
+            'status'   => 'nullable|string',
+            'status.*' => 'in:pending,borrowed,cancelled,returned,overdue,all',
         ];
     }
 

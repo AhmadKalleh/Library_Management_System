@@ -15,9 +15,13 @@ class BorrowResource extends JsonResource
         return [
             'id'           => $this->id,
             'status'       => $this->status,
-            'user'         => $this->whenLoaded('user', fn() => [
-                'id'   => $this->user->id,
-                'name' => $this->user->name,
+            'user' => $this->whenLoaded('user', fn() => [
+                'id'    => $this->user->id,
+                'name'  => $this->user->name,
+                'email' => $this->user->email,
+                'image' => $this->user->relationLoaded('image') && $this->user->image
+                    ? url(Storage::url($this->user->image->path))
+                    : url(Storage::url('users/profile-user.png')), // صورة افتراضية
             ]),
             'book' => $this->whenLoaded('book', function () {
                 return [

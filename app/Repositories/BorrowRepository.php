@@ -10,12 +10,12 @@ use Illuminate\Support\Facades\DB;
 
 class BorrowRepository implements BorrowRepositoryInterface
 {
-    private function base_query(string $status = 'all')
+    private function base_query(array $statuses = [])
     {
-        $query = Borrow::with(['user', 'book.image', 'book.category']);
+        $query = Borrow::with(['user.image', 'book.image', 'book.category']);
 
-        if ($status !== 'all') {
-            $query->where('status', $status);
+        if (!empty($statuses) && !in_array('all', $statuses)) {
+            $query->whereIn('status', $statuses); // ✅ whereIn بدل where
         }
 
         return $query;
@@ -58,9 +58,9 @@ class BorrowRepository implements BorrowRepositoryInterface
             ->exists();
     }
 
-    public function index(string $status, bool $is_admin, int $user_id):array
+    public function index(array $statuses, bool $is_admin, int $user_id):array
     {
-        $query = $this->base_query($status);
+        $query = $this->base_query($statuses);
 
         if (!$is_admin) {
             $query->where('user_id', $user_id);

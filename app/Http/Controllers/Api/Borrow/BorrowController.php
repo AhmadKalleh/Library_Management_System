@@ -24,15 +24,17 @@ class BorrowController extends Controller
     {
         $data = [];
 
-        try
-        {
-            $this->authorize('viewAny', Borrow::class);
-
+        try {
             $user     = Auth::user();
-            $status   = $request->validated()['status'] ?? 'all';
             $is_admin = $user->role === 'admin';
 
-            $raw  = $this->_borrowService->get_borrows($status, $is_admin, $user->id);
+            // تحويل الـ status لـ array
+            $statuses = [];
+            if (!empty($request->validated()['status'])) {
+                $statuses = explode(',', $request->validated()['status']);
+            }
+
+            $raw  = $this->_borrowService->get_borrows($statuses, $is_admin, $user->id);
             $data = [
                 'borrows'    => BorrowResource::collection($raw['data']['borrows']),
                 'pagination' => $raw['data']['pagination'],

@@ -9,9 +9,9 @@ class BorrowService
         protected BorrowRepositoryInterface $_borrowRepository
     ) {}
 
-    public function get_borrows(string $status, bool $is_admin, int $user_id): array
+    public function get_borrows(array $statuses, bool $is_admin, int $user_id): array
     {
-        $result = $this->_borrowRepository->index($status, $is_admin, $user_id);
+        $result = $this->_borrowRepository->index($statuses, $is_admin, $user_id);
 
         return [
             'data'    => $result,

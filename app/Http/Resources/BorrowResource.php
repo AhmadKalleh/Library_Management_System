@@ -41,7 +41,10 @@ class BorrowResource extends JsonResource
             'time_remaining' => $this->when(
                 in_array($this->status, ['borrowed', 'overdue']),
                 fn() => $this->due_at
-                    ? now()->diffForHumans($this->due_at, ['parts' => 2])
+                    ? now()->diffForHumans($this->due_at, [
+                        'parts' => 2,
+                        'syntax' => \Carbon\CarbonInterface::DIFF_ABSOLUTE,
+                    ])
                     : null
             ),
         ];

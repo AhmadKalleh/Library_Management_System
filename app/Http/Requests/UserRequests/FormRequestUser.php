@@ -74,15 +74,11 @@ class FormRequestUser extends FormRequest
 
         return [
             'name'                  => 'sometimes|string|max:255',
-            'email'                 => [
-                'sometimes',
-                'email',
-                Rule::unique('users', 'email')->ignore($userId),
-            ],
             'mobile'                => [
                 'sometimes',
                 'string',
                 Rule::unique('users', 'mobile')->ignore($userId),
+                'phone:US-SY,mobile,AUTO'
             ],
             'password'              => 'sometimes|string|min:8|confirmed',
             'role'                  => 'sometimes|string|in:admin,user',
@@ -106,6 +102,8 @@ class FormRequestUser extends FormRequest
             'email.unique'     => 'This email is already taken.',
             'password.min'     => 'Password must be at least 8 characters.',
             'password.confirmed' => 'Password confirmation does not match.',
+            'mobile.unique'    => 'This mobile number is already taken.',
+            'mobile.phone'     => 'The mobile number format is invalid.',
         ];
     }
 
@@ -113,7 +111,8 @@ class FormRequestUser extends FormRequest
     {
 
         if ($this->method() === 'POST'
-        && $this->route()->getActionMethod() === 'create_user')
+        && ($this->route()->getActionMethod() === 'create_user'
+        || $this->route()->getActionMethod() === 'update_user'))
         {
                 $this->merge([
                 'name' => trim($this->name),

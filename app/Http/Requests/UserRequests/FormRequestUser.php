@@ -109,16 +109,25 @@ class FormRequestUser extends FormRequest
 
     protected function prepareForValidation()
     {
+        if (
+            $this->method() === 'POST' &&
+            in_array($this->route()->getActionMethod(), ['create_user', 'update_user'])
+        ) {
+            $data = [];
 
-        if ($this->method() === 'POST'
-        && ($this->route()->getActionMethod() === 'create_user'
-        || $this->route()->getActionMethod() === 'update_user'))
-        {
-                $this->merge([
-                'name' => trim($this->name),
-                'password' => trim($this->password),
-                'mobile' => $this->normalizePhone($this->mobile),
-            ]);
+            if ($this->has('name')) {
+                $data['name'] = trim($this->name);
+            }
+
+            if ($this->has('password')) {
+                $data['password'] = trim($this->password);
+            }
+
+            if ($this->has('mobile')) {
+                $data['mobile'] = $this->normalizePhone($this->mobile);
+            }
+
+            $this->merge($data);
         }
     }
 

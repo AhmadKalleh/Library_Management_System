@@ -33,7 +33,7 @@ class BookService
 
     public function filter_books(array $data): array
     {
-        $result = $this->_bookRepository->filter($data['category_id'], $data['status']);
+        $result = $this->_bookRepository->filter($data['category_id'] ?? null, $data['status']);
 
         return [
             'data'    => $result,

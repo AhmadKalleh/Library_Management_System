@@ -58,20 +58,29 @@ class BookRepository implements BookRepositoryInterface
         return $this->booksData($books);
     }
 
-    public function filter($category_id, $status = 'all'): array
+    public function filter($category_id = null, $status = 'all'): array
     {
-        $query = Book::with(['category', 'image'])->where('category_id', $category_id);
+        $query = Book::with(['category', 'image']);
 
+        // ✅ فلترة حسب التصنيف فقط إذا موجود
+        if ($category_id) {
+            $query->where('category_id', $category_id);
+        }
+
+        // ✅ فلترة حسب الحالة
         switch (strtolower($status)) {
             case 'available':
                 $query->where('available_copies', '>', 0);
                 break;
+
             case 'unavailable':
                 $query->where('available_copies', '=', 0);
                 break;
 
+            case 'all':
             default:
-                // No additional filtering for 'all'`
+                // لا شيء
+                break;
         }
 
         $books = $query->latest()->paginate(10);

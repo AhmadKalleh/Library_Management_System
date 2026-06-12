@@ -51,11 +51,11 @@ class FormRequestBook extends FormRequest
     public function filter(): array
     {
         return [
-            'category_id' => 'required|integer|exists:categories,id',
+            'category_id' => 'nullable|integer|exists:categories,id',
             'status' => 'sometimes|string|in:available,unavailable,all',
         ];
     }
-    
+
     public function index():array
     {
         return [

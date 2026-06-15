@@ -94,7 +94,7 @@ class FormRequestBook extends FormRequest
                 Rule::unique('books', 'title')->ignore($bookId),
             ],
             'author' => 'sometimes|string|max:255',
-            'available_copies' => 'sometimes|integer|min:1',
+            'available_copies' => 'sometimes|integer',
             'image' => 'sometimes|file|mimes:jpeg,png,jpg,gif,svg,ico',
         ];
     }

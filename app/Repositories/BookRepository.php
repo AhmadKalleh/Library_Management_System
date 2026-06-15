@@ -132,6 +132,7 @@ class BookRepository implements BookRepositoryInterface
             'title'            => $data['title']            ?? $book->title,
             'author'           => $data['author']           ?? $book->author,
             'available_copies' => $data['available_copies'] ?? $book->available_copies,
+            'status'           => ($data['available_copies'] ?? $book->available_copies) > 0 ? 'available' : 'unavailable',
         ]);
 
         // تحديث الصورة إذا أُرسلت

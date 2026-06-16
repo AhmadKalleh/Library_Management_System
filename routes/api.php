@@ -49,6 +49,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // User Profile
     Route::get('profile', [UserController::class, 'profile']);
     Route::post('profile/{user}', [UserController::class, 'update_user']);
+
+    Route::get('homepage-stats', [UserController::class, 'homepage_statistics']);
     // Admin Only
     Route::middleware('can:is-admin')->group(function ()
     {

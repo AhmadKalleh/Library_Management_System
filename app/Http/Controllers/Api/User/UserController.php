@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Services\User\UserService;
 use App\Traits\ResponseHelper\ResponseHelper;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use Throwable;
 
 class UserController extends Controller
@@ -125,6 +126,23 @@ class UserController extends Controller
             $this->authorize('viewAny', User::class);
 
             $raw  = $this->_userService->get_dashboard_stats();
+            $data = $raw['data'];
+
+            return $this->Success($data, $raw['message'], $raw['code']);
+
+        } catch (Throwable $e) {
+            return $this->Error($data, $e->getMessage());
+        }
+    }
+
+    public function homepage_statistics(): JsonResponse
+    {
+        $data = [];
+
+        try {
+            $this->authorize('viewHomepageStats', User::class);
+
+            $raw  = $this->_userService->get_homepage_stats(Auth::id());
             $data = $raw['data'];
 
             return $this->Success($data, $raw['message'], $raw['code']);

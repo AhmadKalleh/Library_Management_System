@@ -167,6 +167,17 @@ class UserRepository implements UserRepositoryInterface
         ];
     }
 
+    public function getHomepageStats(int $user_id): array
+    {
+        $user = User::findOrFail($user_id);
+
+        return [
+            'total_books'       => Book::count(),
+            'available_books'   => Book::where('status', 'available')->count(),
+            'borrowed_books'    => $user->borrows()->where('status', 'borrowed')->count(),
+            'overdue_borrows'   => $user->borrows()->where('status', 'overdue')->count(),
+        ];
+    }
 
     public function show_profile(): array
     {

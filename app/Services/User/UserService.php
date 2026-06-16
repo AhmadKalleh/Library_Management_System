@@ -84,6 +84,17 @@ class UserService
         ];
     }
 
+    public function get_homepage_stats(int $user_id): array
+    {
+        $result = $this->_userRepository->getHomepageStats($user_id);
+
+        return [
+            'data'    => $result,
+            'message' => 'Homepage stats retrieved successfully',
+            'code'    => 200,
+        ];
+    }
+
     public function get_profile(): array
     {
         $result = $this->_userRepository->show_profile();

@@ -18,6 +18,11 @@ class UserPolicy
         return $user->role === 'admin';
     }
 
+    public function viewHomepageStats(User $user): bool
+    {
+        return $user->role === 'user';
+    }
+
     // Admin ينشئ مستخدم
     public function create(User $user): bool
     {

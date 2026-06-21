@@ -120,11 +120,8 @@ class BorrowRepository implements BorrowRepositoryInterface
                 'expires_at'   => now()->addHours(12),
             ]);
 
-            $book->decrement('available_copies');
 
-            if ($book->available_copies <= 0) {
-                $book->update(['status' => 'unavailable']);
-            }
+
 
             \App\Jobs\CancelExpiredBorrowJob::dispatch($borrow->id)
                 ->delay(now()->addHours(12));
@@ -149,6 +146,7 @@ class BorrowRepository implements BorrowRepositoryInterface
                 'due_at'      => now()->addDays(7),
             ]);
 
+            $borrow->book->increment('borrowed_copies');
 
             \App\Jobs\CheckOverdueBorrowJob::dispatch($borrow->id)
                 ->delay(now()->addDays(7));
@@ -173,7 +171,6 @@ class BorrowRepository implements BorrowRepositoryInterface
             ]);
 
             $book = Book::lockForUpdate()->findOrFail($borrow->book_id);
-            $book->increment('available_copies');
             $book->decrement('borrowed_copies');
             $book->update(['status' => 'available']);
 
